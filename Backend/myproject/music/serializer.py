@@ -1,0 +1,62 @@
+from rest_framework import serializers
+from .models import *
+class ArtistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Artists
+        fields = '__all__'
+class TrackSerializer(serializers.ModelSerializer):
+    image_url=serializers.SerializerMethodField()
+    artists=serializers.CharField(source='artists.name')
+    class Meta:
+        model = Track
+        fields = '__all__'
+    def get_image_url(self,obj):
+        request=self.context.get('request')
+        return request.build_absolute_uri(obj.image_url.url)
+class AlbumSerializer(serializers.ModelSerializer):
+    image_url=serializers.SerializerMethodField()
+    class Meta:
+        model = Album
+        fields = '__all__'
+    def get_image_url(self,obj):
+        request=self.context.get('request')
+        return request.build_absolute_uri(obj.image_url.url)
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['is_premium','image_url']
+class TrackASerializer(serializers.ModelSerializer):
+    artists= serializers.CharField(source='artists.name')
+    album= serializers.SerializerMethodField()
+    image_url=serializers.SerializerMethodField()
+    class Meta:
+        model = Track
+        fields = ['id','title','duration','release_date','is_Prenium','file','image_url','artists','album']
+    def get_image_url(self, obj):
+     request = self.context.get('request')
+     return request.build_absolute_uri(obj.image_url.url)
+    def get_album(self,obj):
+     return obj.album.title if obj.album else None
+class ListTrackFromAlbumSerializer(serializers.ModelSerializer):
+    track_set = TrackASerializer(many=True, read_only=True)
+    artists= serializers.CharField(source='artists.name')
+    image_url=serializers.SerializerMethodField()
+    def get_image_url(self, obj):
+     request = self.context.get('request')
+     return request.build_absolute_uri(obj.image_url.url)
+    class Meta: 
+        model = Album
+        fields = ['title','artists','image_url','decription','release_date','track_set']
+class PlaylistSerializer(serializers.ModelSerializer):
+    image_url=serializers.SerializerMethodField()
+    song = TrackASerializer(many=True)
+    users = serializers.CharField(source='users.username')
+    class Meta:
+        model=Playlist
+        fields='__all__'
+    def get_image_url(self,obj):
+        if obj.image_url:
+           request=self.context.get('request')
+           return request.build_absolute_uri(obj.image_url.url)
+        else:
+            return None
