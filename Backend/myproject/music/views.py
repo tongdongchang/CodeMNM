@@ -28,7 +28,9 @@ class TrackList(APIView):
         if category=='video' and not id:
             track=Track.objects.filter(category='video').exclude(id=1).order_by('-point')[:8]
         elif category=='audio':
-            track=Track.objects.filter(category='audio').order_by('-point')[:8]
+            track=Track.objects.filter(category='audio')
+            serializer=TrackSerializer(track,many=True,context={'request': request})
+            return Response(serializer.data)
         else:
             track=Track.objects.all().order_by('-point')
         if id and category=='video':
