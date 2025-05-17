@@ -74,3 +74,20 @@ class PlaylistSerializer(serializers.ModelSerializer):
            return request.build_absolute_uri(obj.image_url.url)
         else:
             return None
+class ProfileSerializer(serializers.ModelSerializer):
+    # Tạo trường để lấy URL đầy đủ của avatar
+    avatar_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'is_premium', 'image_url', 'avatar_url', 'date_joined']
+        read_only_fields = ['id', 'date_joined']
+    
+    def get_avatar_url(self, obj):
+        """Phương thức để lấy URL đầy đủ của avatar"""
+        request = self.context.get('request')
+        
+        if obj.image_url and hasattr(obj.image_url, 'url'):
+            # Tạo URL đầy đủ (có domain)
+            return request.build_absolute_uri(obj.image_url.url)
+        return None

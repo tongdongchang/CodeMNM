@@ -846,3 +846,118 @@ gap: 8px;
 .modal-body-name input::placeholder{
   color: hsl(0, 1%, 32%);
 }
+
+/* CSS cho trang profile */
+.profile-container {
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.profile-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.profile-card {
+  background-color: #282828;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+/* CSS cho phần avatar */
+.profile-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-avatar img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #1DB954;
+}
+
+.default-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #1DB954;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  font-weight: bold;
+  color: white;
+}
+
+.change-avatar-button {
+  background-color: #1DB954;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.change-avatar-button:hover {
+  background-color: #1ed760;
+}
+
+/* CSS cho thông tin cá nhân */
+.profile-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-row {
+  display: flex;
+  padding: 12px;
+  background-color: #333;
+  border-radius: 5px;
+}
+
+.info-label {
+  width: 150px;
+  font-weight: bold;
+  color: #ccc;
+}
+
+.info-value {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.premium-badge {
+  color: gold;
+  font-weight: bold;
+}
+
+.upgrade-button {
+  background-color: #1DB954;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+/* CSS cho loading */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 18px;
+}

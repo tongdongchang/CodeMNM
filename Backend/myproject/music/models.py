@@ -1,5 +1,6 @@
 from django.db import models
 import os
+import shutil
 from django.contrib.auth.models import AbstractUser
 from mutagen import File as MutagenFile
 from django.conf import settings
@@ -52,7 +53,47 @@ class Album(models.Model):
     release_date = models.DateField(auto_now_add=True)
 class CustomUser(AbstractUser):
     is_premium = models.BooleanField(default=False)
-    image_url = models.ImageField(upload_to='Img/media/User/',null=True,blank=True)
+    image_url = models.ImageField(upload_to='Img/media/User/', null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        # Kiểm tra nếu đây là user mới (chưa có ID)
+        is_new_user = not self.pk
+        
+        # Lưu user trước để có ID
+        super().save(*args, **kwargs)
+        
+        # Nếu là user mới và chưa có avatar, gán avatar mặc định
+        if is_new_user and not self.image_url:
+            # Đường dẫn đến avatar mặc định
+            # Thay đổi đường dẫn từ 'default_avatar' thành 'Img/default_avatar'
+            default_avatar = os.path.join(settings.MEDIA_ROOT, 'Img', 'default_avatar', 'default_avatar.png')
+            
+            # Tạo thư mục lưu avatar người dùng nếu chưa có
+            user_avatar_dir = os.path.join(settings.MEDIA_ROOT, 'Img', 'media', 'User')
+            os.makedirs(user_avatar_dir, exist_ok=True)
+            
+            # Tạo tên file mới với ID người dùng để tránh trùng lặp
+            new_avatar_name = f'avatar_{self.username}_{self.id}.png'
+            new_avatar_path = os.path.join(user_avatar_dir, new_avatar_name)
+            
+            # Sao chép avatar mặc định sang vị trí mới
+            try:
+                # Kiểm tra nếu file mặc định tồn tại
+                if os.path.exists(default_avatar):
+                    # Sao chép file
+                    shutil.copy(default_avatar, new_avatar_path)
+                    
+                    # Cập nhật đường dẫn avatar trong database
+                    # Lưu ý: đường dẫn phải tương đối với MEDIA_ROOT
+                    relative_path = os.path.join('Img', 'media', 'User', new_avatar_name)
+                    self.image_url = relative_path
+                    
+                    # Lưu lại (chỉ cập nhật trường image_url)
+                    super().save(update_fields=['image_url'])
+                else:
+                    print(f"Không tìm thấy avatar mặc định tại: {default_avatar}")
+            except Exception as e:
+                print(f"Lỗi khi sao chép avatar mặc định: {e}")
 class Playlist(models.Model):
     title = models.CharField( max_length=50)
     users = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
