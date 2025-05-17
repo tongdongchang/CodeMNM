@@ -6,9 +6,10 @@ export const MusicContext = createContext();
 function Home(){
   const [data,setData]=useState({})
   const [reloading,setReload]=useState(false)
+  const [user,setUser]= useState()
 return(
     <div className="container">
-      <MusicContext.Provider value={{data,setData,reloading,setReload}}> 
+      <MusicContext.Provider value={{data,setData,reloading,setReload,user,setUser}}> 
       <Slider></Slider>
             <Outlet></Outlet>
     <MusicPlayer></MusicPlayer>

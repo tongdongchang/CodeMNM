@@ -8,7 +8,7 @@ import {MusicContext} from './Home'
 function PlayList(){
     const [searchParams] = useSearchParams(); 
     const id = searchParams.get('id');
-    const {setData} = useContext(MusicContext);
+    const {setData,user} = useContext(MusicContext);
     const [album,setAlbum]=useState();
     const [currentId,setCurrentId] = useState();
     useEffect(()=>{
@@ -22,8 +22,11 @@ function PlayList(){
     },[])
     if (!album) return (<h1>Loading...</h1>)
     const listTrack=album.track_set.map((res,index)=>(<tr key={res.id} onClick={()=>{
-       setData({title:res.title,artists:album.artists,image_url:res.image_url,file:res.file}) 
+        if(!res.is_Prenium ||(res.is_Prenium&&user.is_premium)){
+        setData({title:res.title,artists:album.artists,image_url:res.image_url,file:res.file}) 
        setCurrentId(res.id)
+        }
+
     }
     } className={currentId==res.id ? 'HasChecked':''}>
         <td>{index+1}</td>

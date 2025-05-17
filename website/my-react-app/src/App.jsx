@@ -14,6 +14,7 @@ import Artists from "./Admin/Artists"
 import Album from "./Admin/Album"
 import ViewDetail from './Admin/DetailAlbum';
 import Login from './prop/Login';
+import PayPal from './prop/paypal';
 import { Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
 function App() {
@@ -23,6 +24,7 @@ function App() {
     <Route index element={<Main></Main>}></Route>
     <Route path='/album' element={<PlayList></PlayList>}></Route>
     <Route path='/video' element={<PlayVideoMusic></PlayVideoMusic>}></Route>
+    <Route path='/paypal' element={<PayPal></PayPal>}></Route>
     <Route path='/search' element={<Search></Search>}></Route>
     <Route path='/playlist' element={<UserPlaylist></UserPlaylist>}></Route>
     </Route>

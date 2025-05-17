@@ -21,6 +21,11 @@ class ProfileAPIView(APIView):
         profile = request.user 
         serializer = ProfileSerializer(profile)
         return Response(serializer.data)
+    def post(self,request):
+        profile= request.user
+        profile.is_premium = True
+        profile.save()
+        return Response({'message':'You are now prenium'},status=201)
 class TrackList(APIView):
     def get(self,request):
         category=request.query_params.get('category','').strip()

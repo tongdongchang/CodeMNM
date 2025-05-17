@@ -8,7 +8,7 @@ import {useState,useEffect,useContext} from 'react';
 import { MusicContext } from './Home';
 import axios from 'axios';
 function Main(){
-  const {setData} = useContext(MusicContext)
+  const {setData,user} = useContext(MusicContext)
   const  [audio,setAudio] = useState([])
   const [video,setVideo] = useState([])
   const [album,setAlbum] = useState([])
@@ -46,7 +46,9 @@ function Main(){
     setData(id)
   }
   const listAudio = audio.map(au =>(
-    <div className='box1' key={au.id} onClick={()=>handleAudio({file:au.file,artists:au.artists,image_url:au.image_url,title:au.title})}>
+    <div className='box1' key={au.id} onClick={()=>{
+      if(!au.is_Prenium ||(au.is_Prenium&&user.is_premium)){ handleAudio({file:au.file,artists:au.artists,image_url:au.image_url,title:au.title})}
+     }}>
    <img src={au.image_url} alt={`http://localhost:8000/${au.image_url}/`} />
     <p>{au.title}</p>
     <i class="fa-sharp fa-solid fa-circle-play"></i>
@@ -60,7 +62,11 @@ function Main(){
     </div>
   ))
   const listVideo = video.map(av=>(
-    <div className="Card" key={av.id} onClick={()=>handleVideo(av.id)}>
+    <div className="Card" key={av.id} onClick={()=>{
+      if (!av?.is_Prenium || user.is_premium) {
+        handleVideo(av.id);
+      }
+      }}>
     <img src={av.image_url} alt="lõi" />
     <p className='card-title'>{av.title}</p>
     <p className='card-content'>{av.artists}</p>

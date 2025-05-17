@@ -35,7 +35,7 @@ class AlbumSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['is_premium','image_url']
+        fields = '__all__'
 class TrackASerializer(serializers.ModelSerializer):
     artists= serializers.CharField(source='artists.name')
     album= serializers.SerializerMethodField()
@@ -49,12 +49,15 @@ class TrackASerializer(serializers.ModelSerializer):
     def get_album(self,obj):
      return obj.album.title if obj.album else None
 class ListTrackFromAlbumSerializer(serializers.ModelSerializer):
-    track_set = TrackASerializer(many=True, read_only=True)
+    track_set = serializers.SerializerMethodField()
     artists= serializers.CharField(source='artists.name')
     image_url=serializers.SerializerMethodField()
     def get_image_url(self, obj):
      request = self.context.get('request')
      return request.build_absolute_uri(obj.image_url.url)
+    def get_track_set(self,obj):
+        tracks= obj.track_set.filter(category='audio')
+        return TrackASerializer(tracks,many=True, context=self.context).data
     class Meta: 
         model = Album
         fields = ['title','artists','image_url','decription','release_date','track_set']
