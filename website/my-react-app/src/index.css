@@ -844,7 +844,6 @@ width: 50%;
   width: 100%;
 }
 
-/* Hiệu ứng hover giống nhau cho cả hai */
 .dropdown li a:hover, 
 .dropdown li p:hover {
   background-color: #1DB954;
