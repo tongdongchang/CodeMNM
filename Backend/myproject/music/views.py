@@ -183,57 +183,38 @@ class ProfileAPIView(APIView):
         # Trả về dữ liệu dạng JSON
         return Response(serializer.data)
 
-class UploadAvatarView(APIView):
+
+class EditProfileView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
     
     def post(self, request):
-        """Tải lên avatar mới cho người dùng"""
         try:
-            # Lấy file từ request
-            avatar_file = request.FILES.get('avatar')
-            
-            # Kiểm tra nếu không có file
-            if not avatar_file:
-                return Response({
-                    'error': 'Không có file nào được tải lên'
-                }, status=400)
-            
-            # Kiểm tra định dạng file
-            valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
-            file_extension = os.path.splitext(avatar_file.name)[1].lower()
-            
-            if file_extension not in valid_extensions:
-                return Response({
-                    'error': 'File không hợp lệ. Chỉ chấp nhận các định dạng: jpg, jpeg, png, gif'
-                }, status=400)
-            
-            # Lấy user hiện tại
             user = request.user
+            password = request.data.get('password', '')
+            image_url = request.FILES.get('image_url', None)
             
-            # Lưu đường dẫn ảnh cũ để xóa sau
-            old_avatar = None
-            if user.image_url:
-                old_avatar = user.image_url.path
+            if password:
+                user.set_password(password)
             
-            # Cập nhật avatar mới
-            user.image_url = avatar_file
+            if image_url:
+                # Xóa ảnh cũ nếu có và không phải ảnh mặc định
+                if user.image_url and os.path.exists(user.image_url.path):
+                    if 'Img/default_avatar' not in user.image_url.path:
+                        try:
+                            os.remove(user.image_url.path)
+                        except Exception as e:
+                            print(f"Không thể xóa ảnh cũ: {e}")
+                
+                user.image_url = image_url
+            
             user.save()
             
-            # Xóa file cũ nếu không phải avatar mặc định
-            if old_avatar and os.path.exists(old_avatar):
-                # Thay đổi 'default_avatar' thành 'Img/default_avatar'
-                if 'Img/default_avatar' not in old_avatar:
-                    os.remove(old_avatar)
-            
-            # Trả về URL mới
             return Response({
-                'message': 'Avatar đã được cập nhật thành công',
-                'image_url': request.build_absolute_uri(user.image_url.url)
-            })
+                'message': 'Cập nhật thông tin thành công'
+            }, status=200)
             
         except Exception as e:
-            # Trả về lỗi
             return Response({
-                'error': f'Lỗi khi tải lên avatar: {str(e)}'
-            }, status=500)
+                'error': f'Lỗi: {str(e)}'
+            }, status=400)

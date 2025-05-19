@@ -19,4 +19,8 @@ urlpatterns = [
     path('searchFull/',views.Search.as_view(),name='SearchFull'),
     path('EditPlaylist/',views.playlistEdit.as_view(),name='playlistEdit'),
     path('TrackChanging/',views.TrackChanging.as_view(),name='playlistEdit'),
+    path('profile/', views.ProfileAPIView.as_view(), name='Profile'),
+    path('EditProfile/', views.EditProfileView.as_view(), name='edit_profile'),
+
+    
 ]
