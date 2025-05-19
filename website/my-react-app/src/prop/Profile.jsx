@@ -1,5 +1,4 @@
-// Import các thành phần cần thiết
-import { useState, useEffect, useRef } from "react"; // Thêm useRef
+import { useState, useEffect, useRef } from "react";
 import AnxiosInstance from "./GetToken";
 import Head from "./Head";
 import Footer from "./Footer";
@@ -76,7 +75,7 @@ function Profile() {
         // Hiển thị thông báo thành công
         setError({
           type: "message",
-          mess: "Đổi mật khẩu thành công",
+          mess: res.data.message || "Đổi mật khẩu thành công",
           timestamp: Date.now()
         });
         
@@ -104,23 +103,28 @@ function Profile() {
     const formData = new FormData();
     formData.append('image_url', file);
     
+    // Hiển thị trạng thái đang tải
+    setLoading(true);
+    
     // Gọi API upload ảnh đại diện
     AnxiosInstance.post('EditProfile/', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
-      .then(() => {
+      .then((response) => {
+        // Hiển thị thông báo thành công
+        setError({
+          type: "message",
+          mess: response.data.message || "Cập nhật ảnh đại diện thành công",
+          timestamp: Date.now()
+        });
+        
         // Sau khi upload thành công, tải lại thông tin profile
         return AnxiosInstance.get("profile/");
       })
       .then(response => {
         // Cập nhật profile với dữ liệu mới
         setProfile(response.data);
-        // Hiển thị thông báo thành công
-        setError({
-          type: "message",
-          mess: "Cập nhật ảnh đại diện thành công",
-          timestamp: Date.now()
-        });
+        setLoading(false);
       })
       .catch(err => {
         // Hiển thị thông báo lỗi
@@ -129,8 +133,20 @@ function Profile() {
           mess: err.response?.data?.error || "Lỗi khi cập nhật ảnh đại diện",
           timestamp: Date.now()
         });
+        setLoading(false);
       });
   };
+  
+  // Function to get full image URL
+  const getImageUrl = (imageUrlPath) => {
+    if (!imageUrlPath) return null;
+    
+    if (imageUrlPath.startsWith('http')) {
+      return imageUrlPath;
+    }
+    
+    return `http://localhost:8000${imageUrlPath.startsWith('/') ? '' : '/'}${imageUrlPath}`;
+  }
   
   // Hiển thị trạng thái đang tải
   if (loading) {
@@ -159,6 +175,12 @@ function Profile() {
             <div className="avatar-upload-container">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} alt="Avatar" className="profile-avatar-img" />
+              ) : profile?.image_url ? (
+                <img 
+                  src={getImageUrl(profile.image_url)} 
+                  alt="Avatar" 
+                  className="profile-avatar-img" 
+                />
               ) : (
                 <div className="default-avatar">
                   {profile?.username ? profile.username[0].toUpperCase() : "?"}
@@ -204,7 +226,7 @@ function Profile() {
                 Ngày tham gia:
               </div>
               <div className="info-value">
-                {new Date(profile?.date_joined).toLocaleDateString()}
+                {profile?.date_joined ? new Date(profile.date_joined).toLocaleDateString() : "N/A"}
               </div>
             </div>
             
@@ -217,7 +239,14 @@ function Profile() {
                 <span className={`account-type ${profile?.is_premium ? "premium-badge" : ""}`}>
                   {profile?.is_premium ? "Premium" : "Thường"}
                 </span>
-                {/* Đã xóa nút nâng cấp premium */}
+                {!profile?.is_premium && (
+                  <button 
+                    onClick={() => window.location.href = '/paypal'} 
+                    className="upgrade-button ml-3"
+                  >
+                    Nâng cấp Premium
+                  </button>
+                )}
               </div>
             </div>
             

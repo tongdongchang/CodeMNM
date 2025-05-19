@@ -1162,3 +1162,84 @@ gap: 8px;
   font-weight: bold;
   color: white;
 }
+
+/* paypal */
+/* CSS cho trang thanh toán Premium */
+.premium-container {
+    padding: 30px;
+    margin: 20px auto;
+    max-width: 800px;
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    color: white;
+}
+
+.premium-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #1DB954; /* Màu xanh Spotify */
+}
+
+.premium-description {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.premium-price {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.premium-price h2 {
+    color: #1DB954;
+    font-size: 2rem;
+}
+
+.premium-payment {
+    margin: 0 auto;
+    max-width: 450px;
+    margin-bottom: 40px;
+}
+
+.paypal-button-container {
+    width: 100%;
+    min-height: 150px;
+}
+
+.premium-features {
+    background-color: #282828;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.premium-features h3 {
+    color: #1DB954;
+    margin-bottom: 15px;
+}
+
+.premium-features ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.premium-features li {
+    padding: 8px 0;
+    position: relative;
+    padding-left: 30px;
+}
+
+.premium-features li:before {
+    content: "✓";
+    color: #1DB954;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* Ẩn dòng Powered by PayPal ở cuối form thanh toán */
+.paypal-button-container .paypal-powered-by {
+    display: none !important;
+}
