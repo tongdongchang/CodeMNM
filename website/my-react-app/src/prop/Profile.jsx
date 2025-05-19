@@ -1,80 +1,138 @@
-
-import { useState, useEffect } from "react";
+// Import các thành phần cần thiết
+import { useState, useEffect, useRef } from "react"; // Thêm useRef
 import AnxiosInstance from "./GetToken";
 import Head from "./Head";
 import Footer from "./Footer";
 import Alert from "./Alert";
 
 function Profile() {
-  // State để lưu thông tin profile
+  // State lưu thông tin người dùng
   const [profile, setProfile] = useState(null);
-  // State để hiển thị trạng thái loading
+  // State theo dõi trạng thái đang tải
   const [loading, setLoading] = useState(true);
-  // State để hiển thị thông báo lỗi/thành công
-  const [error, setError] = useState({ type: null, mess: null, timestamp: null });
-
-  // Chạy khi component được tạo
+  // State cho thông báo lỗi/thành công
+  const [error, setError] = useState({
+    type: null,
+    mess: null,
+    timestamp: null
+  });
+  
+  // State cho chức năng đổi mật khẩu
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  
+  // Ref cho input file upload
+  const fileInputRef = useRef(null);
+  
+  // Tải thông tin người dùng khi component được tạo
   useEffect(() => {
-    // Gọi API để lấy thông tin profile
+    // Gọi API lấy thông tin người dùng
     AnxiosInstance.get("profile/")
       .then((response) => {
-        // Lưu thông tin profile vào state
+        // Cập nhật state với dữ liệu người dùng
         setProfile(response.data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Lỗi khi lấy thông tin profile:", err);
-        setError({
-          type: "error",
-          mess: "Không thể lấy thông tin profile",
-          timestamp: Date.now(),
-        });
+        console.error("Lỗi khi lấy thông tin người dùng:", err);
         setLoading(false);
       });
   }, []);
-
-  // Hàm tải lên avatar mới
-  const handleAvatarUpload = (event) => {
-    // Lấy file từ input
-    const file = event.target.files[0];
+  
+  // Hàm xử lý khi người dùng nhấn nút đổi mật khẩu
+  const handleTogglePasswordForm = () => {
+    setShowPasswordForm(!showPasswordForm);
     
-    if (!file) return;
-
-    // Tạo form data để gửi file
+    // Reset các trường nhập liệu nếu đang ẩn form
+    if (showPasswordForm) {
+      setCurrentPassword("");
+      setNewPassword("");
+    }
+  };
+  
+  // Hàm xử lý khi người dùng gửi form đổi mật khẩu
+  const handleChangePassword = () => {
+    // Kiểm tra dữ liệu nhập vào
+    if (!currentPassword || !newPassword) {
+      setError({
+        type: "error",
+        mess: "Vui lòng nhập đầy đủ thông tin",
+        timestamp: Date.now()
+      });
+      return;
+    }
+    
+    // Tạo FormData để gửi dữ liệu
     const formData = new FormData();
-    formData.append("avatar", file);
-
-    // Gọi API để tải lên avatar
-    AnxiosInstance.post("upload-avatar/", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+    formData.append('current_password', currentPassword);
+    formData.append('password', newPassword);
+    
+    // Gọi API đổi mật khẩu
+    AnxiosInstance.post('EditProfile/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     })
-      .then((response) => {
-        // Cập nhật lại profile với avatar mới
-        setProfile({
-          ...profile,
-          avatar_url: response.data.image_url,
-        });
-        
+      .then(res => {
         // Hiển thị thông báo thành công
         setError({
           type: "message",
-          mess: "Đã cập nhật avatar thành công",
-          timestamp: Date.now(),
+          mess: "Đổi mật khẩu thành công",
+          timestamp: Date.now()
         });
+        
+        // Ẩn form và reset các trường nhập liệu
+        setShowPasswordForm(false);
+        setCurrentPassword("");
+        setNewPassword("");
       })
-      .catch((err) => {
-        console.error("Lỗi khi tải lên avatar:", err);
+      .catch(err => {
+        // Hiển thị thông báo lỗi
         setError({
           type: "error",
-          mess: err.response?.data?.error || "Không thể tải lên avatar",
-          timestamp: Date.now(),
+          mess: err.response?.data?.error || "Lỗi khi đổi mật khẩu",
+          timestamp: Date.now()
         });
       });
   };
-
-  // Hiển thị trạng thái loading
+  
+  // Hàm xử lý khi người dùng chọn file ảnh đại diện mới
+  const handleAvatarUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Tạo FormData để gửi dữ liệu
+    const formData = new FormData();
+    formData.append('image_url', file);
+    
+    // Gọi API upload ảnh đại diện
+    AnxiosInstance.post('EditProfile/', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+      .then(() => {
+        // Sau khi upload thành công, tải lại thông tin profile
+        return AnxiosInstance.get("profile/");
+      })
+      .then(response => {
+        // Cập nhật profile với dữ liệu mới
+        setProfile(response.data);
+        // Hiển thị thông báo thành công
+        setError({
+          type: "message",
+          mess: "Cập nhật ảnh đại diện thành công",
+          timestamp: Date.now()
+        });
+      })
+      .catch(err => {
+        // Hiển thị thông báo lỗi
+        setError({
+          type: "error",
+          mess: err.response?.data?.error || "Lỗi khi cập nhật ảnh đại diện",
+          timestamp: Date.now()
+        });
+      });
+  };
+  
+  // Hiển thị trạng thái đang tải
   if (loading) {
     return (
       <div className="main">
@@ -83,7 +141,8 @@ function Profile() {
       </div>
     );
   }
-
+  
+  // Hiển thị nội dung chính
   return (
     <div className="main">
       <Head />
@@ -92,61 +151,127 @@ function Profile() {
       <Alert error={error.mess} type={error.type} id={error.timestamp} />
       
       <div className="profile-container">
-        <h1>Hồ Sơ Của Bạn</h1>
+        <h1 className="profile-title">Hồ Sơ Của Bạn</h1>
         
         <div className="profile-card">
-          {/* Phần avatar */}
+          {/* Phần avatar với khả năng upload khi hover */}
           <div className="profile-avatar">
-            {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="Avatar" />
-            ) : (
-              <div className="default-avatar">
-                {profile?.username ? profile.username[0].toUpperCase() : "?"}
+            <div className="avatar-upload-container">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="Avatar" className="profile-avatar-img" />
+              ) : (
+                <div className="default-avatar">
+                  {profile?.username ? profile.username[0].toUpperCase() : "?"}
+                </div>
+              )}
+              <div className="avatar-overlay" onClick={() => fileInputRef.current.click()}>
+                <i className="fa-solid fa-camera"></i>
+                <span>Thay đổi ảnh</span>
               </div>
-            )}
+            </div>
             
-            {/* Nút để thay đổi avatar */}
-            <label className="change-avatar-button">
-              Thay đổi avatar
-              <input
-                type="file"
-                style={{ display: "none" }}
-                onChange={handleAvatarUpload}
-                accept="image/*"
-              />
-            </label>
+            {/* Input file ẩn cho việc upload ảnh */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleAvatarUpload}
+              accept="image/*"
+            />
           </div>
           
           {/* Thông tin cá nhân */}
           <div className="profile-info">
+            {/* Hàng thông tin: Tên người dùng */}
             <div className="info-row">
-              <div className="info-label">Tên người dùng:</div>
+              <div className="info-label">
+                Tên người dùng:
+              </div>
               <div className="info-value">{profile?.username}</div>
             </div>
             
+            {/* Hàng thông tin: Email */}
             <div className="info-row">
-              <div className="info-label">Email:</div>
+              <div className="info-label">
+                Email:
+              </div>
               <div className="info-value">{profile?.email}</div>
             </div>
             
+            {/* Hàng thông tin: Ngày tham gia */}
             <div className="info-row">
-              <div className="info-label">Ngày tham gia:</div>
+              <div className="info-label">
+                Ngày tham gia:
+              </div>
               <div className="info-value">
                 {new Date(profile?.date_joined).toLocaleDateString()}
               </div>
             </div>
             
+            {/* Hàng thông tin: Loại tài khoản */}
             <div className="info-row">
-              <div className="info-label">Loại tài khoản:</div>
+              <div className="info-label">
+                Loại tài khoản:
+              </div>
               <div className="info-value">
-                <span className={profile?.is_premium ? "premium-badge" : ""}>
+                <span className={`account-type ${profile?.is_premium ? "premium-badge" : ""}`}>
                   {profile?.is_premium ? "Premium" : "Thường"}
                 </span>
-                
-                {!profile?.is_premium && (
-                  <button className="upgrade-button">
-                    Nâng cấp lên Premium
+                {/* Đã xóa nút nâng cấp premium */}
+              </div>
+            </div>
+            
+            {/* Hàng thông tin: Mật khẩu */}
+            <div className="info-row">
+              <div className="info-label">
+                Mật khẩu:
+              </div>
+              <div className="info-value">
+                {/* Nút đổi mật khẩu hoặc form đổi mật khẩu */}
+                {!showPasswordForm ? (
+                  <button 
+                    onClick={handleTogglePasswordForm} 
+                    className="change-password-button"
+                  >
+                    Đổi mật khẩu
                   </button>
+                ) : (
+                  <div className="password-form-container">
+                    {/* Form đổi mật khẩu */}
+                    <div>
+                      <input 
+                        type="password" 
+                        placeholder="Mật khẩu hiện tại" 
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        className="password-input"
+                      />
+                      
+                      <input 
+                        type="password" 
+                        placeholder="Mật khẩu mới" 
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="password-input"
+                      />
+                    </div>
+                    
+                    <div className="password-actions">
+                      <button 
+                        onClick={handleChangePassword}
+                        className="save-button"
+                      >
+                        Lưu
+                      </button>
+                      
+                      <button 
+                        onClick={handleTogglePasswordForm}
+                        className="cancel-button"
+                      >
+                        Hủy
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

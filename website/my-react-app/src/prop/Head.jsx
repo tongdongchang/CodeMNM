@@ -63,12 +63,17 @@ return(
           {profile?.is_premium?<button>Your are prenium</button>:<button class="badge nav-items hide" onClick={()=>navigate('/paypal')}>Explore Premium</button>}
         
         {profile?<img src={`http://127.0.0.1:8000/${profile.image_url}/`}ref={userIconRef} onClick={()=>setOpen(open=>open=true)} width={40} height={40}></img>:<i className="fa-regular fa-user nav-items" ref={userIconRef} onClick={()=>setOpen(open=>open=true)}></i>}
-        {open&&(
-    <ul class="dropdown" ref={dropdownRef} >
-      <li>{profile?<Link data-bs-toggle="modal" data-bs-target="#myModal123">Profile</Link>:<Link to='/login'>Login</Link>}</li>
-      <li>{profile?<p onClick={handleLogout}>Log Out</p>:<Link to='/Register'>Register</Link>}</li>
-    </ul>
-        )}
+        {open && (
+  <ul class="dropdown" ref={dropdownRef} >
+    <li>{profile ? 
+      // Thay đổi thành điều hướng đến trang Profile
+      <Link to="/profile">Profile</Link> 
+      : 
+      <Link to='/login'>Login</Link>}
+    </li>
+    <li>{profile ? <p onClick={handleLogout}>Log Out</p> : <Link to='/Register'>Register</Link>}</li>
+  </ul>
+)}
         </div>
         <div class="modal" id="myModal123">
   <div class="modal-dialog">
