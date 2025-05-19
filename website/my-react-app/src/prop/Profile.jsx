@@ -62,7 +62,7 @@ function Profile() {
       return;
     }
     
-    // Tạo FormData để gửi dữ liệu
+    // Tạo formdfata để gửi dữ liệu
     const formData = new FormData();
     formData.append('current_password', currentPassword);
     formData.append('password', newPassword);
@@ -99,7 +99,7 @@ function Profile() {
     const file = event.target.files[0];
     if (!file) return;
     
-    // Tạo FormData để gửi dữ liệu
+    // Tạo formdata để gửi dữ liệu
     const formData = new FormData();
     formData.append('image_url', file);
     
