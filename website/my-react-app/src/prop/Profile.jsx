@@ -3,7 +3,7 @@ import AnxiosInstance from "./GetToken";
 import Head from "./Head";
 import Footer from "./Footer";
 import Alert from "./Alert";
-import { getFullImageUrl } from "./utils"; // Import hàm từ utils.js
+import { getFullImageUrl, getUserAvatar } from "./utils"; 
 
 function Profile() {
   // State lưu thông tin người dùng
@@ -163,19 +163,7 @@ function Profile() {
           {/* Phần avatar với khả năng upload khi hover */}
           <div className="profile-avatar">
             <div className="avatar-upload-container">
-              {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="Avatar" className="profile-avatar-img" />
-              ) : profile?.image_url ? (
-                <img 
-                  src={getFullImageUrl(profile.image_url)} 
-                  alt="Avatar" 
-                  className="profile-avatar-img" 
-                />
-              ) : (
-                <div className="default-avatar">
-                  {profile?.username ? profile.username[0].toUpperCase() : "?"}
-                </div>
-              )}
+              {getUserAvatar(profile, 150, 60)}
               <div className="avatar-overlay" onClick={() => fileInputRef.current.click()}>
                 <i className="fa-solid fa-camera"></i>
                 <span>Thay đổi ảnh</span>

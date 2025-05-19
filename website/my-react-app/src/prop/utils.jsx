@@ -41,3 +41,50 @@ export function formatTime(seconds) {
   return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
+/**
+ * Hiển thị avatar mặc định 
+ * return JSX component cho avatar
+ */
+export function getDefaultAvatar(username, size = 40, fontSize = 18, onClick = null) {
+  return (
+    <div 
+      className="default-avatar" 
+      style={{
+        width: `${size}px`, 
+        height: `${size}px`, 
+        fontSize: `${fontSize}px`,
+        cursor: onClick ? 'pointer' : 'default'
+      }}
+      onClick={onClick}
+    >
+      {username ? username[0].toUpperCase() : "?"}
+    </div>
+  );
+}
+
+/**
+ * Hiển thị avatar người dùng, sử dụng ảnh nếu có hoặc avatar mặc định
+ * return JSX component cho avatar
+ */
+export function getUserAvatar(profile, size = 40, fontSize = 18, onClick = null, ref = null) {
+  if (!profile) return null;
+  
+  if (profile.image_url) {
+    return (
+      <img 
+        src={getFullImageUrl(profile.image_url)} 
+        ref={ref}
+        onClick={onClick} 
+        width={size} 
+        height={size} 
+        alt="Avatar"
+        style={{
+          borderRadius: '50%',
+          cursor: onClick ? 'pointer' : 'default'
+        }}
+      />
+    );
+  } else {
+    return getDefaultAvatar(profile.username, size, fontSize, onClick);
+  }
+}

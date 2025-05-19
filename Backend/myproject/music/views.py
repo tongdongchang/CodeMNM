@@ -198,13 +198,12 @@ class EditProfileView(APIView):
                 user.set_password(password)
             
             if image_url:
-                # Xóa ảnh cũ nếu có và không phải ảnh mặc định
+                # Xóa ảnh cũ nếu có
                 if user.image_url and os.path.exists(user.image_url.path):
-                    if 'Img/default_avatar' not in user.image_url.path:
-                        try:
-                            os.remove(user.image_url.path)
-                        except Exception as e:
-                            print(f"Không thể xóa ảnh cũ: {e}")
+                    try:
+                        os.remove(user.image_url.path)
+                    except Exception as e:
+                        print(f"Không thể xóa ảnh cũ: {e}")
                 
                 user.image_url = image_url
             

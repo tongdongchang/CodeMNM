@@ -1,11 +1,10 @@
 import axios from "axios";
 import {useState, useRef, useEffect, useContext} from "react"
 import Alert from "./Alert";
-import img1 from '../assets/no-music.jpg';
 import { Link, useNavigate } from "react-router-dom";
 import AnxiosInstance from "./GetToken";
 import { MusicContext } from "./Home";
-import { getFullImageUrl } from "./utils"; 
+import { getUserAvatar } from "./utils"; 
 
 function Head(){
     const [open, setOpen] = useState(false)
@@ -136,14 +135,7 @@ function Head(){
               }
             
               {profile 
-                ? <img 
-                    src={getFullImageUrl(profile.image_url, img1)} 
-                    ref={userIconRef} 
-                    onClick={() => setOpen(true)} 
-                    width={40} 
-                    height={40} 
-                    alt="Avatar"
-                  />
+                ? getUserAvatar(profile, 40, 18, () => setOpen(true), userIconRef)
                 : <i className="fa-regular fa-user nav-items" ref={userIconRef} onClick={() => setOpen(true)}></i>
               }
               
@@ -181,15 +173,7 @@ function Head(){
                         onChange={handleFile} 
                         accept="image/*"
                       />
-                      <img 
-                        src={profile?.image_url ? getFullImageUrl(profile.image_url, img1) : img1} 
-                        width={200}
-                        height={200} 
-                        ref={fileRef} 
-                        onClick={() => fileRef.current.click()} 
-                        style={{cursor: 'pointer', borderRadius: '50%'}}
-                        alt="Profile"
-                      />
+                      {profile && getUserAvatar(profile, 200, 80, () => fileRef.current.click(), fileRef)}
                       <div className='modal-body-name'>
                         <input 
                           type="password" 
