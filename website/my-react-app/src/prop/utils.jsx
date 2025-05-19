@@ -1,19 +1,16 @@
-
-/**
- * Các utility functions dùng chung 
- */
-
 /**
  * Chuyển đổi đường dẫn ảnh thành URL đầy đủ để hiển thị
+ * 
  * imagePath - Đường dẫn ảnh từ server
- * @returns URL đầy đủ hoặc null nếu không có ảnh
+ * defaultImage ảnh mặc định nếu không có đường dẫn
+ * return URL đầy đủ, ảnh mặc định hoặc null
  */
-export function getFullImageUrl(imagePath) {
+export function getFullImageUrl(imagePath, defaultImage = null) {
   if (!imagePath) {
-    return null;
+    return defaultImage;
   }
   
-  // Nếu đã là URL đầy đủ (có http), giữ nguyên
+  // Nếu đã là URL đầy đủ, giữ nguyên
   if (imagePath.startsWith('http')) {
     return imagePath;
   }
@@ -21,20 +18,19 @@ export function getFullImageUrl(imagePath) {
   const SERVER_URL = 'http://localhost:8000';
   
   // Xử lý trường hợp đường dẫn có dấu / ở đầu
-  let formattedPath = imagePath;
   if (imagePath.startsWith('/')) {
     // Nếu đã có dấu "/" ở đầu path, không thêm dấu "/" nữa
-    return SERVER_URL + formattedPath;
+    return SERVER_URL + imagePath;
   } else {
     // Nếu chưa có dấu "/" ở đầu path, thêm dấu "/"
-    return SERVER_URL + '/' + formattedPath;
+    return SERVER_URL + '/' + imagePath;
   }
 }
 
 /**
  * Format thời gian từ giây sang định dạng mm:ss
- * @param {number} seconds - Thời gian tính bằng giây
- * @returns {string} - Chuỗi thời gian định dạng mm:ss
+ * seconds - thời gian tính bằng giây
+ * return chuỗi thời gian định dạng mm:ss
  */
 export function formatTime(seconds) {
   if (isNaN(seconds)) return "00:00";
@@ -45,4 +41,3 @@ export function formatTime(seconds) {
   return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
 
-// Thêm các utility functions khác tại đây khi cần

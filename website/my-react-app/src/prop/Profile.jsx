@@ -3,6 +3,7 @@ import AnxiosInstance from "./GetToken";
 import Head from "./Head";
 import Footer from "./Footer";
 import Alert from "./Alert";
+import { getFullImageUrl } from "./utils"; // Import hàm từ utils.js
 
 function Profile() {
   // State lưu thông tin người dùng
@@ -62,7 +63,7 @@ function Profile() {
       return;
     }
     
-    // Tạo formdfata để gửi dữ liệu
+    // Tạo FormData để gửi dữ liệu
     const formData = new FormData();
     formData.append('current_password', currentPassword);
     formData.append('password', newPassword);
@@ -99,7 +100,7 @@ function Profile() {
     const file = event.target.files[0];
     if (!file) return;
     
-    // Tạo formdata để gửi dữ liệu
+    // Tạo FormData để gửi dữ liệu
     const formData = new FormData();
     formData.append('image_url', file);
     
@@ -137,17 +138,6 @@ function Profile() {
       });
   };
   
-  // Function to get full image URL
-  const getImageUrl = (imageUrlPath) => {
-    if (!imageUrlPath) return null;
-    
-    if (imageUrlPath.startsWith('http')) {
-      return imageUrlPath;
-    }
-    
-    return `http://localhost:8000${imageUrlPath.startsWith('/') ? '' : '/'}${imageUrlPath}`;
-  }
-  
   // Hiển thị trạng thái đang tải
   if (loading) {
     return (
@@ -177,7 +167,7 @@ function Profile() {
                 <img src={profile.avatar_url} alt="Avatar" className="profile-avatar-img" />
               ) : profile?.image_url ? (
                 <img 
-                  src={getImageUrl(profile.image_url)} 
+                  src={getFullImageUrl(profile.image_url)} 
                   alt="Avatar" 
                   className="profile-avatar-img" 
                 />

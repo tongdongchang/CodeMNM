@@ -56,7 +56,6 @@ class CustomUser(AbstractUser):
     image_url = models.ImageField(upload_to='Img/media/User/', null=True, blank=True)
     
     def save(self, *args, **kwargs):
-        # Kiểm tra nếu đây là user mới (chưa có ID)
         is_new_user = not self.pk
         
         # Lưu user trước để có ID
@@ -99,4 +98,4 @@ class Playlist(models.Model):
     users = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     image_url = models.ImageField(upload_to='Img/Playlist/',null=True,blank=True)
     song = models.ManyToManyField('Track',blank=True)
-# Create your models here.
+

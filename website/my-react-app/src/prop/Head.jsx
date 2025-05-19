@@ -5,6 +5,7 @@ import img1 from '../assets/no-music.jpg';
 import { Link, useNavigate } from "react-router-dom";
 import AnxiosInstance from "./GetToken";
 import { MusicContext } from "./Home";
+import { getFullImageUrl } from "./utils"; 
 
 function Head(){
     const [open, setOpen] = useState(false)
@@ -118,18 +119,7 @@ function Head(){
           });
         });
     }
-    
-    // Function to get full image URL
-    const getImageUrl = (imageUrlPath) => {
-      if (!imageUrlPath) return img1;
-      
-      if (imageUrlPath.startsWith('http')) {
-        return imageUrlPath;
-      }
-      
-      return `http://localhost:8000${imageUrlPath.startsWith('/') ? '' : '/'}${imageUrlPath}`;
-    }
-
+  
     return(
         <div className="nav-header">
             <Alert error={error.mess} type={error.type} id={error.timestamp} />
@@ -147,7 +137,7 @@ function Head(){
             
               {profile 
                 ? <img 
-                    src={getImageUrl(profile.image_url)} 
+                    src={getFullImageUrl(profile.image_url, img1)} 
                     ref={userIconRef} 
                     onClick={() => setOpen(true)} 
                     width={40} 
@@ -192,7 +182,7 @@ function Head(){
                         accept="image/*"
                       />
                       <img 
-                        src={profile?.image_url ? getImageUrl(profile.image_url) : img1} 
+                        src={profile?.image_url ? getFullImageUrl(profile.image_url, img1) : img1} 
                         width={200}
                         height={200} 
                         ref={fileRef} 
