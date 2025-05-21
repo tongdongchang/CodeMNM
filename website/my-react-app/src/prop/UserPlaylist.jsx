@@ -95,7 +95,7 @@ function UserPlaylist(){
         formData.append('id',params)
         formData.append('title',inputRef.current.value)
         formData.append('image_url',file)     
-        AnxiosInstance.post('EditPlaylist/',formData,{headers:{'Content-Type':'multipart/form-data'}})
+        AnxiosInstance.post('EditPlaylist/  ',formData,{headers:{'Content-Type':'multipart/form-data'}})
         .then(res=>{setReload(reload=>!reload)
             console.log(file)
             })

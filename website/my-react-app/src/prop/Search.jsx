@@ -10,43 +10,34 @@ function Search(){
   const [video,setVideo] = useState()
   const [album,setAlbum] = useState()
   const {setData} = useContext(MusicContext)
-  const handleSearch = (e)=>{
-    AnxiosInstance.get('searchFull',{
-      params:{
-        category:'audio',
-        title:e.target.value
-      }
-    }).then(res=>{setAudio(res.data)
-      console.log(res.data)
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    if (value.trim() === "") {
+      setAudio([]);
+      setVideo([]);
+      setAlbum([]);
+      return;
     }
-  )
-    .catch(err=>console.log(err))
-    AnxiosInstance.get('searchFull',{
-      params:{
-        category:'video',
-        title:e.target.value
+
+    AnxiosInstance.get('searchFull', {
+      params: {
+        title: value
       }
-    }).then(res=>{setVideo(res.data)
-      console.log(res.data)
     })
-    .catch(err=>console.log(err))
-    AnxiosInstance.get('searchFull',{
-      params:{
-        category:'album',
-        title:e.target.value
-      }
-    }).then(res=>{setAlbum(res.data)
-      console.log(res.data)
-  }
-  )
-    .catch(err=>console.log(err))
-  }
+      .then(res => {
+        setAudio(res.data.audio);
+        setVideo(res.data.video);
+        setAlbum(res.data.album);
+      })
+      .catch(err => console.log(err));
+  };
   const navigate = useNavigate()
   const handleNavigateVideo = (id)=>{
-    navigate(`/Video?id=${id}`)
+    navigate(`/video?id=${id}`)
   }
   const handleNavigateAlbum = (id)=>{
-    navigate(`/Album?id=${id}`)
+    navigate(`/album?id=${id}`)
   }
   const listAudio =audio? audio.map((res)=>(
     <div className="box1" onClick={()=>setData({image_url:res.image_url,file:res.file,title:res.title,artists:res.artists})}>

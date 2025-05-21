@@ -1,29 +1,42 @@
-import img1 from '../assets/img1.jpg';
+
 import img2 from '../assets/heart-line.png';
 import img3 from '../assets/controls5.png';
-import audio1 from '../assets/Audio/MatKetNoi-DuongDomic-16783113.mp3'
 import {useState,useEffect,useRef,useContext} from 'react';
 import {MusicContext} from './Home'
 function MusicPlayer(){
    const [currentTime,setcurrentTime] = useState(0)
    const [maxTime,setmaxTime] = useState(0)
-   const {data} =useContext(MusicContext);
+   const {data, type} = useContext(MusicContext);
    const [isPlay,setIsPlay] = useState(false)
    const audioRef = useRef(null)
    const progressRef = useRef(null)
-   useEffect(
-    ()=>{
-        const audio = audioRef.current
-        audio.addEventListener('loadedmetadata',()=>setmaxTime(audio.duration))
-        audio.addEventListener('timeupdate',()=>{
-            setcurrentTime(audio.currentTime)
-            if(progressRef.current){
-                progressRef.current.value = (audio.currentTime/audio.duration)*100
+   
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio || !data?.file) return;
+
+        const handleLoadedMetadata = () => setmaxTime(audio.duration);
+        const handleTimeUpdate = () => {
+            setcurrentTime(audio.currentTime);
+            if (progressRef.current) {
+                progressRef.current.value = (audio.currentTime / audio.duration) * 100;
             }
-        })
-        audio.addEventListener('canplay',()=>{audio.play();setIsPlay(true)})
-    }
-    ,[])
+        };
+        const handleCanPlay = () => {
+            audio.play();
+            setIsPlay(true);
+        };
+
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('canplay', handleCanPlay);
+
+        return () => {
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('canplay', handleCanPlay);
+        };
+    }, [data]);
     const handlePlay = ()=>{
         const audio = audioRef.current
         if(!audio) return
@@ -50,6 +63,7 @@ function MusicPlayer(){
         const audio= audioRef.current;
         audio.volume = parseFloat(e.target.value);
     }
+    if (!data || !data.file || type !== 'audio') return null;
 return(<>
 <div className="music-player">
             <div className="album">

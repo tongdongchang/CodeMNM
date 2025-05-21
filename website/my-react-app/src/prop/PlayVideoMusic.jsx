@@ -16,10 +16,10 @@ function PlayVideoMusic(){
         })
         .catch(err=>console.log(err))
         axios.get(`http://localhost:8000/api/track/?category=video`)
-        .then(res=>{setMoreVideo(res.data)}
-    )
+        .then(res=>{setMoreVideo(res.data)
+        })
         .catch(err=>console.log(err))    
-      }, []);
+      }, [id]);
       const navigate = useNavigate()
       const handlleNavigate = (id)=>{
         navigate(`.?id=${id}`)
@@ -48,7 +48,11 @@ function PlayVideoMusic(){
         </ul>
         <ul className='PlayVideoMusic-Info-Love'>
             <li>❤️ Love</li>
-            <li>⬇️ Dowload</li>
+            <li>
+            <a href={`http://localhost:8000/api/download-track/${OriginVideo.id}/`} download>
+                ⬇️ Download
+            </a>
+            </li>
         </ul>
     </div>
     <div className="PlayVideoMusic-Description">
@@ -57,14 +61,12 @@ function PlayVideoMusic(){
     </div>
     <div className="PlayVideoMusic-Description-Next">
         <h1 className='PlayVideoMusic-H1'>Next Video</h1>
-                <div className='card-container card-container-extend'>
-                    {listVideo}
-                </div>
+        <div className='card-container card-container-extend'>
+            {listVideo}
+        </div>
     </div>
 </div>   
         </div>
-  
-    
     )
 }
 export default PlayVideoMusic

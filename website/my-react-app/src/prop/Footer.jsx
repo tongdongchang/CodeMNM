@@ -47,7 +47,6 @@ return(
                     <li><a href="">About Us</a></li>
                     <li><a href="">Accessibility</a></li>
                 </ul>
-                <p>© 2025 Thanh Tân</p>
             </div>
         </div>
     </div>
